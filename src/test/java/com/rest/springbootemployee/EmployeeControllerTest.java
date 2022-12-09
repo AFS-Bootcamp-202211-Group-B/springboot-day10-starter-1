@@ -120,7 +120,6 @@ public class EmployeeControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Susan"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.age").value(20))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.salary").value(55000))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.gender").value("Female"));
 
         // then

@@ -44,10 +44,10 @@ public class CompanyController {
 
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Company create(@RequestBody CompanyRequest companyRequest) {
+    public CompanyResponse create(@RequestBody CompanyRequest companyRequest) {
         Company company = companyMapper.toEntity(companyRequest);
         Company createdCompany = companyService.create(company);
-        return createdCompany;
+        return companyMapper.toResponse(createdCompany);
     }
 
     @PutMapping("/{id}")

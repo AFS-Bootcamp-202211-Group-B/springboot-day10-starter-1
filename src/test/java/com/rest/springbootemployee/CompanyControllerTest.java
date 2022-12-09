@@ -253,4 +253,42 @@ public class CompanyControllerTest {
                 .content(newCompanyJson))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
+
+    @Test
+    void should_return_404_when_perform_get_by_id_given_invalid_id() throws Exception {
+        // given
+        // when
+        // then
+        client.perform(MockMvcRequestBuilders.get("/companies/{id}", "1"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    void should_return_404_when_perform_put_by_id_given_invalid_id() throws Exception {
+        // given
+        String id = new ObjectId().toString();
+        Company company = new Company(id, "Goola", null);
+        String newCompanyJson = new ObjectMapper().writeValueAsString(company);
+
+        // when
+        // then
+        client.perform(MockMvcRequestBuilders.put("/companies/{id}", "1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newCompanyJson))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    public void should_return_404_when_perform_delete_by_id_given_invalid_id() throws Exception {
+        //given
+        List<Employee> employees = new ArrayList<>();
+        employees.add(new Employee(new ObjectId().toString(), "lili", 20, "Female", 2000));
+        employees.add(new Employee(new ObjectId().toString(), "coco", 10, "Female", 8000));
+
+        Company company = companyMongoRepository.save(new Company(new ObjectId().toString(), "Spring", employees));
+
+        //when & then
+        client.perform(MockMvcRequestBuilders.delete("/companies/{id}", "1"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
 }

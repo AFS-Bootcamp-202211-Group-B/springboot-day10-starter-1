@@ -3,7 +3,6 @@ package com.rest.springbootemployee.controller;
 import com.rest.springbootemployee.controller.dto.EmployeeRequest;
 import com.rest.springbootemployee.controller.dto.EmployeeResponse;
 import com.rest.springbootemployee.controller.maper.EmployeeMapper;
-import com.rest.springbootemployee.entity.Employee;
 import com.rest.springbootemployee.service.EmployeeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -25,27 +24,27 @@ public class EmployeeController {
 
     @GetMapping
     public List<EmployeeResponse> getAll() {
-        return employeeService.findAll().stream().map(employee->employeeMapper.toEntity(employee)).collect(Collectors.toList());
+        return employeeService.findAll().stream().map(employee->employeeMapper.toResponse(employee)).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public EmployeeResponse getById(@PathVariable String id) {
-        return employeeMapper.toEntity(employeeService.findById(id));
+        return employeeMapper.toResponse(employeeService.findById(id));
     }
 
     @GetMapping(params = {"gender"})
     public List<EmployeeResponse> getByGender(@RequestParam String gender) {
-        return employeeService.findByGender(gender).stream().map(employee->employeeMapper.toEntity(employee)).collect(Collectors.toList());
+        return employeeService.findByGender(gender).stream().map(employee->employeeMapper.toResponse(employee)).collect(Collectors.toList());
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public EmployeeResponse add(@RequestBody EmployeeRequest employee) {
-        return employeeMapper.toEntity(employeeService.create(employeeMapper.toEntity(employee)));
+        return employeeMapper.toResponse(employeeService.create(employeeMapper.toResponse(employee)));
     }
     @PutMapping("/{id}")
     public EmployeeResponse update(@PathVariable String id, @RequestBody EmployeeRequest employee) {
-        return employeeMapper.toEntity(employeeService.update(id, employeeMapper.toEntity(employee)));
+        return employeeMapper.toResponse(employeeService.update(id, employeeMapper.toResponse(employee)));
     }
 
     @DeleteMapping("/{id}")
@@ -57,7 +56,7 @@ public class EmployeeController {
 
     @GetMapping(params = {"page", "pageSize"})
     public List<EmployeeResponse> getByPage(int page, int pageSize) {
-        return employeeService.findByPage(page, pageSize).stream().map(employee->employeeMapper.toEntity(employee)).collect(Collectors.toList());
+        return employeeService.findByPage(page, pageSize).stream().map(employee->employeeMapper.toResponse(employee)).collect(Collectors.toList());
     }
 
 }

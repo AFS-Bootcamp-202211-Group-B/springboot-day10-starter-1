@@ -37,6 +37,7 @@ public class CompanyController {
         return companyService.findByPage(page, pageSize);
     }
 
+
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
     public Company create(@RequestBody Company company) {

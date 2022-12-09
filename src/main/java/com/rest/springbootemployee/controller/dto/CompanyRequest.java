@@ -7,6 +7,9 @@ public class CompanyRequest {
         this.name = name;
     }
 
+    public CompanyRequest() {
+    }
+
     public String getName() {
         return name;
     }

@@ -1,5 +1,8 @@
 package com.rest.springbootemployee.controller;
 
+import com.rest.springbootemployee.controller.dto.CompanyRequest;
+import com.rest.springbootemployee.controller.dto.CompanyResponse;
+import com.rest.springbootemployee.controller.maper.CompanyMapper;
 import com.rest.springbootemployee.entity.Company;
 import com.rest.springbootemployee.service.CompanyService;
 import com.rest.springbootemployee.entity.Employee;
@@ -12,9 +15,11 @@ import java.util.List;
 @RequestMapping("/companies")
 public class CompanyController {
     private CompanyService companyService;
+    private CompanyMapper companyMapper;
 
-    public CompanyController(CompanyService companyService) {
+    public CompanyController(CompanyService companyService, CompanyMapper companyMapper) {
         this.companyService = companyService;
+        this.companyMapper = companyMapper;
     }
 
     @GetMapping
@@ -23,8 +28,8 @@ public class CompanyController {
     }
 
     @GetMapping("/{id}")
-    public Company getById(@PathVariable String id) {
-        return companyService.findById(id);
+    public CompanyResponse getById(@PathVariable String id) {
+        return companyMapper.toResponse(companyService.findById(id));
     }
 
     @GetMapping("/{id}/employees")
@@ -40,13 +45,14 @@ public class CompanyController {
 
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Company create(@RequestBody Company company) {
-        return companyService.create(company);
+    public CompanyResponse create(@RequestBody Company company) {
+        return companyMapper.toResponse(companyService.create(company));
     }
 
     @PutMapping("/{id}")
-    public Company update(@PathVariable String id, @RequestBody Company company) {
-        return companyService.update(id, company);
+    public CompanyResponse update(@PathVariable String id, @RequestBody CompanyRequest companyRequest) {
+        Company company = companyMapper.toEntity(companyRequest);
+        return companyMapper.toResponse(companyService.update(id, company));
     }
 
     @DeleteMapping("/{id}")

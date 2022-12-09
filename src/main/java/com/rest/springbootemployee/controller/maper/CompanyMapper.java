@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CompanyMapper {
-    public Company toResponse(CompanyRequest companyRequest){
+    public Company toEntity(CompanyRequest companyRequest){
         Company company = new Company();
         BeanUtils.copyProperties(companyRequest,company);
         return company;
@@ -19,7 +19,7 @@ public class CompanyMapper {
     public CompanyResponse toResponse(Company company){
         CompanyResponse CompanyResponse = new CompanyResponse();
         BeanUtils.copyProperties(company,CompanyResponse);
-        CompanyResponse.setEmployeeCount(company.getEmployees().size());
+        CompanyResponse.setEmployeeCount(company.getEmployees()==null?0:company.getEmployees().size());
         return CompanyResponse;
     }
 }

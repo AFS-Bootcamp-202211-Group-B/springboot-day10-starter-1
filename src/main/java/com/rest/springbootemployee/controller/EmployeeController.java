@@ -1,6 +1,7 @@
 package com.rest.springbootemployee.controller;
 
 import com.rest.springbootemployee.controller.dto.EmployeeRequest;
+import com.rest.springbootemployee.controller.dto.EmployeeResponse;
 import com.rest.springbootemployee.controller.mapper.EmployeeMapper;
 import com.rest.springbootemployee.entity.Employee;
 import com.rest.springbootemployee.service.EmployeeService;
@@ -38,12 +39,12 @@ public class EmployeeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Employee add(@RequestBody EmployeeRequest employeeRequest) {
-        return employeeService.create(employeeMapper.toEntity(employeeRequest));
+    public EmployeeResponse add(@RequestBody EmployeeRequest employeeRequest) {
+        return employeeMapper.toResponse(employeeService.create(employeeMapper.toEntity(employeeRequest)));
     }
     @PutMapping("/{id}")
-    public Employee update(@PathVariable String id, @RequestBody Employee employee) {
-        return employeeService.update(id, employee);
+    public Employee update(@PathVariable String id, @RequestBody EmployeeRequest employeeRequest) {
+        return employeeService.update(id, employeeMapper.toEntity(employeeRequest));
     }
 
     @DeleteMapping("/{id}")

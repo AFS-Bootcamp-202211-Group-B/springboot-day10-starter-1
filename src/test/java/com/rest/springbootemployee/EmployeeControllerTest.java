@@ -64,8 +64,7 @@ public class EmployeeControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Susan"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.age").value(22))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.gender").value("Female"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.salary").value(10000));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.gender").value("Female"));
     }
 
     @Test
@@ -120,14 +119,12 @@ public class EmployeeControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Susan"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.age").value(20))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.salary").value(55000))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.gender").value("Female"));
 
         // then
         final Employee updatedEmployee = employeeMongoRepository.findAll().get(0);
         assertThat(updatedEmployee.getName(), equalTo("Susan"));
         assertThat(updatedEmployee.getAge(), equalTo(20));
-        assertThat(updatedEmployee.getSalary(), equalTo(55000));
         assertThat(updatedEmployee.getGender(), equalTo("Female"));
 
     }

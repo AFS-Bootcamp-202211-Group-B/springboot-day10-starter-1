@@ -1,5 +1,8 @@
 package com.rest.springbootemployee.controller;
 
+import com.rest.springbootemployee.controller.dto.CompanyRequest;
+import com.rest.springbootemployee.controller.dto.CompanyResponse;
+import com.rest.springbootemployee.controller.mapper.CompanyMapper;
 import com.rest.springbootemployee.entity.Company;
 import com.rest.springbootemployee.service.CompanyService;
 import com.rest.springbootemployee.entity.Employee;
@@ -12,9 +15,11 @@ import java.util.List;
 @RequestMapping("/companies")
 public class CompanyController {
     private CompanyService companyService;
+    private CompanyMapper companyMapper;
 
-    public CompanyController(CompanyService companyService) {
+    public CompanyController(CompanyService companyService, CompanyMapper companyMapper) {
         this.companyService = companyService;
+        this.companyMapper = companyMapper;
     }
 
     @GetMapping
@@ -39,8 +44,10 @@ public class CompanyController {
 
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Company create(@RequestBody Company company) {
-        return companyService.create(company);
+    public Company create(@RequestBody CompanyRequest companyRequest) {
+        Company company = companyMapper.toEntity(companyRequest);
+        Company createdCompany = companyService.create(company);
+        return createdCompany;
     }
 
     @PutMapping("/{id}")

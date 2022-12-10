@@ -263,7 +263,7 @@ public class CompanyControllerTest {
     }
 
     @Test
-    void should_return_InvalidIdException_when_perform_getEmployees_given_invalid_id() throws Exception {
+    void should_return_InvalidIdException_and_400_when_perform_getEmployees_given_invalid_id() throws Exception {
         //given
         //when
         //then
@@ -274,7 +274,7 @@ public class CompanyControllerTest {
     }
 
     @Test
-    void should_return_InvalidIdException_when_perform_update_given_invalid_id() throws Exception {
+    void should_return_InvalidIdException_and_400_when_perform_update_given_invalid_id() throws Exception {
         // given
         String id = new ObjectId().toString();
         Company company = new Company(id, "Goola", null);
@@ -290,5 +290,21 @@ public class CompanyControllerTest {
                 .andExpect(result -> assertEquals("Invalid Id", result.getResolvedException().getMessage()));
 
 
+    }
+
+    @Test
+    void should_return_InvalidException_and_400_when_perform_deleteCompany_given_invalid_id() throws Exception {
+        //given
+        List<Employee> employees = new ArrayList<>();
+        employees.add(new Employee(new ObjectId().toString(), "lili", 20, "Female", 2000));
+        employees.add(new Employee(new ObjectId().toString(), "coco", 10, "Female", 8000));
+
+        Company company = companyMongoRepository.save(new Company(new ObjectId().toString(), "Spring", employees));
+
+        //when & then
+        client.perform(MockMvcRequestBuilders.delete("/companies/{id}", "1"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof InvalidIdException))
+                .andExpect(result -> assertEquals("Invalid Id", result.getResolvedException().getMessage()));
     }
 }

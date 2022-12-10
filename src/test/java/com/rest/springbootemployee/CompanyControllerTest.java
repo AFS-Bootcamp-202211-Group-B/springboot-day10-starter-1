@@ -242,4 +242,19 @@ public class CompanyControllerTest {
                 .content(newCompanyJson))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
+
+    @Test
+    void should_return_InvalidIdException_and_400_when_perform_get_by_id_given_not_valid_id() throws Exception {
+        //given
+        List<Employee> employees = new ArrayList<>();
+        employees.add(new Employee(String.valueOf(1), "lili", 20, "Female", 2000));
+        employees.add(new Employee(String.valueOf(2), "coco", 10, "Female", 8000));
+        String id = "1";
+        companyMongoRepository.save(new Company(new ObjectId().toString(), "Spring", employees));
+
+        //when & then
+        client.perform(MockMvcRequestBuilders.get("/companies/{id}", id))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+    }
 }

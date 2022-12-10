@@ -256,7 +256,9 @@ public class CompanyControllerTest {
 
         //when & then
         client.perform(MockMvcRequestBuilders.get("/companies/{id}", id))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof InvalidIdException))
+                .andExpect(result -> assertEquals("Invalid Id", result.getResolvedException().getMessage()));
 
     }
 
@@ -266,7 +268,9 @@ public class CompanyControllerTest {
         //when
         //then
         client.perform(MockMvcRequestBuilders.get("/companies/{id}/employees", "1"))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof InvalidIdException))
+                .andExpect(result -> assertEquals("Invalid Id", result.getResolvedException().getMessage()));
     }
 
     @Test

@@ -34,8 +34,8 @@ public class EmployeeController {
     }
 
     @GetMapping(params = {"gender"})
-    public List<Employee> getByGender(@RequestParam String gender) {
-        return employeeService.findByGender(gender);
+    public List<EmployeeResponse> getByGender(@RequestParam String gender) {
+        return employeeMapper.toResponseList(employeeService.findByGender(gender));
     }
     //Requesting Employee -> EmployeeRequest
     // Mapper convert EmployeeRequest -> Employee

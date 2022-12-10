@@ -80,8 +80,7 @@ public class EmployeeControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(2)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[*].name", containsInAnyOrder("Leo", "Robert")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[*].age", containsInAnyOrder( 20, 25)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[*].gender", containsInAnyOrder( "Male", "Male")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[*].salary", containsInAnyOrder( 9000, 8000)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[*].gender", containsInAnyOrder( "Male", "Male")));
     }
 
     @Test

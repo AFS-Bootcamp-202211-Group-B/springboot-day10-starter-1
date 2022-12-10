@@ -74,10 +74,7 @@ public class CompanyController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCompany(@NonNull @PathVariable String id) {
-        if(!ObjectId.isValid(id)){
-            throw new InvalidIdException();
-        }
+    public void deleteCompany(@PathVariable String id) {
         companyService.delete(id);
     }
 }

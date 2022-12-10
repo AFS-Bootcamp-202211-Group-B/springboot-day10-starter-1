@@ -1,9 +1,5 @@
 package com.rest.springbootemployee.controller.dto;
 
-import com.rest.springbootemployee.entity.Employee;
-
-import java.util.List;
-
 public class CompanyResponse {
     private String id;
     private String name;

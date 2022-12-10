@@ -1,10 +1,13 @@
 package com.rest.springbootemployee.controller;
 
+import com.mongodb.lang.NonNull;
 import com.rest.springbootemployee.controller.dto.EmployeeRequest;
 import com.rest.springbootemployee.controller.dto.EmployeeResponse;
 import com.rest.springbootemployee.controller.mapper.EmployeeMapper;
 import com.rest.springbootemployee.entity.Employee;
+import com.rest.springbootemployee.exception.InvalidIdException;
 import com.rest.springbootemployee.service.EmployeeService;
+import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +31,10 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
-    public EmployeeResponse getById(@PathVariable String id) {
+    public EmployeeResponse getById(@NonNull @PathVariable String id) {
+        if(!ObjectId.isValid(id)){
+            throw new InvalidIdException();
+        }
         Employee findEmployee = employeeService.findById(id);
         return employeeMapper.toResponse(findEmployee);
     }

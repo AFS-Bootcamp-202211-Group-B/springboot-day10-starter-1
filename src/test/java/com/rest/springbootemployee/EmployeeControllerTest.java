@@ -205,7 +205,6 @@ public class EmployeeControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof InvalidIdException))
                 .andExpect(result -> assertEquals("Invalid Id", result.getResolvedException().getMessage()));
-
     }
 
 }

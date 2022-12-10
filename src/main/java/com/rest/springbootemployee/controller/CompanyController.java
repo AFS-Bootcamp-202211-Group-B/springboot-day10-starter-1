@@ -23,8 +23,8 @@ public class CompanyController {
     }
 
     @GetMapping
-    public List<Company> getAll() {
-        return companyService.findAll();
+    public List<CompanyResponse> getAll() {
+        return companyMapper.toResponseList(companyService.findAll());
     }
 
     @GetMapping("/{id}")

@@ -226,4 +226,16 @@ public class EmployeeControllerTest {
 
     }
 
+    @Test
+    void should_return_InvalidIdException_and_400_when_perform_delete_given_invalid_id() throws Exception {
+        //given
+        String employeeId = new ObjectId().toString();
+        employeeMongoRepository.save(new Employee(employeeId, "Jim", 20, "Male", 55000));
+        //when & then
+        client.perform(MockMvcRequestBuilders.delete("/employees/{id}" , "1"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof InvalidIdException))
+                .andExpect(result -> assertEquals("Invalid Id", result.getResolvedException().getMessage()));
+    }
+
 }

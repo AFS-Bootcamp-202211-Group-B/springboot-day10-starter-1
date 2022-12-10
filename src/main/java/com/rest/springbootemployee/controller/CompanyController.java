@@ -63,7 +63,10 @@ public class CompanyController {
     }
 
     @PutMapping("/{id}")
-    public CompanyResponse update(@PathVariable String id, @RequestBody CompanyRequest companyRequest) {
+    public CompanyResponse update(@NonNull @PathVariable String id, @RequestBody CompanyRequest companyRequest) {
+        if(!ObjectId.isValid(id)){
+            throw new InvalidIdException();
+        }
         Company company = companyMapper.toEntity(companyRequest);
         Company updatedCompany = companyService.update(id, company);
         return companyMapper.toResponse(updatedCompany);

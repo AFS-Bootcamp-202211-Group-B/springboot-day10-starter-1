@@ -3,6 +3,8 @@ package com.rest.springbootemployee;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rest.springbootemployee.entity.Company;
 import com.rest.springbootemployee.entity.Employee;
+import com.rest.springbootemployee.exception.InvalidIdException;
+import com.rest.springbootemployee.exception.NoCompanyFoundException;
 import com.rest.springbootemployee.repository.CompanyMongoRepository;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,8 +20,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @SpringBootTest
@@ -265,5 +267,24 @@ public class CompanyControllerTest {
         //then
         client.perform(MockMvcRequestBuilders.get("/companies/{id}/employees", "1"))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    void should_return_InvalidIdException_when_perform_update_given_invalid_id() throws Exception {
+        // given
+        String id = new ObjectId().toString();
+        Company company = new Company(id, "Goola", null);
+        String newCompanyJson = new ObjectMapper().writeValueAsString(company);
+
+        // when
+        // then
+        client.perform(MockMvcRequestBuilders.put("/companies/{id}", "1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newCompanyJson))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof InvalidIdException))
+                .andExpect(result -> assertEquals("Invalid Id", result.getResolvedException().getMessage()));
+
+
     }
 }

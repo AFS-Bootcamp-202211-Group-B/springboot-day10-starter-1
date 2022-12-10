@@ -64,10 +64,7 @@ public class EmployeeController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@NonNull @PathVariable String id) {
-        if(!ObjectId.isValid(id)){
-            throw new InvalidIdException();
-        }
+    public void delete(@PathVariable String id) {
         employeeService.delete(id);
     }
 

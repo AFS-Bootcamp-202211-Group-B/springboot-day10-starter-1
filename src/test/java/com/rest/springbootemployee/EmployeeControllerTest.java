@@ -207,4 +207,23 @@ public class EmployeeControllerTest {
                 .andExpect(result -> assertEquals("Invalid Id", result.getResolvedException().getMessage()));
     }
 
+    @Test
+    void should_return_InvalidIdException_and_400_when_perform_update_given_invalid_id() throws Exception {
+        //given
+        String employeeId = new ObjectId().toString();
+        Employee employee = employeeMongoRepository.save(new Employee(employeeId, "Susan", 22, "Female", 10000));
+        Employee updateEmployee = new Employee(employeeId, "Jim", 20, "Male", 55000);
+
+        String updateEmployeeJson = new ObjectMapper().writeValueAsString(updateEmployee);
+
+        //when
+        client.perform(MockMvcRequestBuilders.put("/employees/{id}","1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateEmployeeJson))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof InvalidIdException))
+                .andExpect(result -> assertEquals("Invalid Id", result.getResolvedException().getMessage()));
+
+    }
+
 }

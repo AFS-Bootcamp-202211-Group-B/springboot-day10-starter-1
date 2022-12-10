@@ -257,4 +257,13 @@ public class CompanyControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
     }
+
+    @Test
+    void should_return_InvalidIdException_when_perform_getEmployees_given_invalid_id() throws Exception {
+        //given
+        //when
+        //then
+        client.perform(MockMvcRequestBuilders.get("/companies/{id}/employees", "1"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
 }

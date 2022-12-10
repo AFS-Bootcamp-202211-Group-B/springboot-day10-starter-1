@@ -42,10 +42,7 @@ public class CompanyController {
     }
 
     @GetMapping("/{id}/employees")
-    public List<EmployeeResponse> getEmployees(@NonNull @PathVariable String id) {
-        if(!ObjectId.isValid(id)){
-            throw new InvalidIdException();
-        }
+    public List<EmployeeResponse> getEmployees(@PathVariable String id) {
         return employeeMapper.toResponseList(companyService.getEmployees(id));
     }
 

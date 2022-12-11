@@ -197,4 +197,42 @@ public class EmployeeControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
+    @Test
+    void should_raise_id_not_found_when_perform_get_by_id_given_employees_and_invalid_id() throws Exception {
+        //given
+        String employeeId = new ObjectId().toString();
+        Employee susan = employeeMongoRepository.save(new Employee(employeeId, "Susan", 22, "Female", 10000));
+        employeeMongoRepository.save(new Employee(new ObjectId().toString(), "Bob", 23, "Male", 9000));
+
+        //when & then
+        client.perform(MockMvcRequestBuilders.get("/employees/{id}", "fakeID"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    void should_raise_id_not_found_when_perform_put_given_employee_and_invalid_id() throws Exception {
+        //given
+        String employeeId = new ObjectId().toString();
+        Employee employee = employeeMongoRepository.save(new Employee(employeeId, "Susan", 22, "Female", 10000));
+        Employee updateEmployee = new Employee(employeeId, "Jim", 20, "Male", 55000);
+
+        String updateEmployeeJson = new ObjectMapper().writeValueAsString(updateEmployee);
+
+        //when
+        client.perform(MockMvcRequestBuilders.put("/employees/{id}", "fakeId"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+    }
+
+    @Test
+    void should_return_invalid_id_when_perform_delete_given_employee_and_invalid_id() throws Exception {
+        //given
+        String employeeId = new ObjectId().toString();
+        Employee createdEmployee = employeeMongoRepository.save(new Employee(employeeId, "Jim", 20, "Male", 55000));
+
+        //when
+        client.perform(MockMvcRequestBuilders.delete("/employees/{id}" , "fakeID"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
 }

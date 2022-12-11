@@ -3,7 +3,9 @@ package com.rest.springbootemployee.controller;
 import com.rest.springbootemployee.controller.dto.EmployeeRequest;
 import com.rest.springbootemployee.controller.dto.EmployeeResponse;
 import com.rest.springbootemployee.controller.maper.EmployeeMapper;
+import com.rest.springbootemployee.exception.InvalidIdException;
 import com.rest.springbootemployee.service.EmployeeService;
+import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +31,9 @@ public class EmployeeController {
 
     @GetMapping("/{id}")
     public EmployeeResponse getById(@PathVariable String id) {
+        if(!ObjectId.isValid(id)){
+            throw new InvalidIdException();
+        }
         return employeeMapper.toResponse(employeeService.findById(id));
     }
 
@@ -44,12 +49,18 @@ public class EmployeeController {
     }
     @PutMapping("/{id}")
     public EmployeeResponse update(@PathVariable String id, @RequestBody EmployeeRequest employee) {
+        if(!ObjectId.isValid(id)){
+            throw new InvalidIdException();
+        }
         return employeeMapper.toResponse(employeeService.update(id, employeeMapper.toResponse(employee)));
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable String id) {
+        if(!ObjectId.isValid(id)){
+            throw new InvalidIdException();
+        }
         employeeService.delete(id);
     }
 

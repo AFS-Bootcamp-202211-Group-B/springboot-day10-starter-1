@@ -40,6 +40,9 @@ public class CompanyController {
 
     @GetMapping("/{id}/employees")
     public List<Employee> getEmployees(@PathVariable String id) {
+        if(!ObjectId.isValid(id)){
+            throw new InvalidIdException();
+        }
         return companyService.getEmployees(id);
     }
 
@@ -58,6 +61,9 @@ public class CompanyController {
 
     @PutMapping("/{id}")
     public CompanyResponse update(@PathVariable String id, @RequestBody CompanyRequest companyRequest) {
+        if(!ObjectId.isValid(id)){
+            throw new InvalidIdException();
+        }
         Company company = companyMapper.toEntity(companyRequest);
         CompanyResponse companyResponse = companyMapper.toResponse( companyService.update(id, company));
 
@@ -67,6 +73,9 @@ public class CompanyController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCompany(@PathVariable String id) {
+        if(!ObjectId.isValid(id)){
+            throw new InvalidIdException();
+        }
         companyService.delete(id);
     }
 }

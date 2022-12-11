@@ -51,6 +51,9 @@ public class EmployeeController {
     }
     @PutMapping("/{id}")
     public EmployeeResponse update(@PathVariable String id, @RequestBody EmployeeRequest employeeRequest) {
+        if(!ObjectId.isValid(id)){
+            throw new InvalidIdException();
+        }
         Employee employee = employeeMapper.toEntity(employeeRequest);
         EmployeeResponse employeeResponse = employeeMapper.toResponse( employeeService.update(id, employee));
 
@@ -60,6 +63,9 @@ public class EmployeeController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable String id) {
+        if(!ObjectId.isValid(id)){
+            throw new InvalidIdException();
+        }
         employeeService.delete(id);
     }
 

@@ -160,7 +160,7 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    void should_return_204_when_perform_delete_given_employee() throws Exception {
+    void should_return_404_when_perform_delete_given_employee() throws Exception {
         //given
         String employeeId = new ObjectId().toString();
         Employee createdEmployee = employeeMongoRepository.save(new Employee(employeeId, "Jim", 20, "Male", 55000));
@@ -186,6 +186,7 @@ public class EmployeeControllerTest {
     void should_return_404_when_perform_put_by_id_given_id_not_exist() throws Exception {
         // given
         String id = new ObjectId().toString();
+        //System.out.println(id + " here");
         Employee updateEmployee = new Employee(id, "Jim", 20, "Male", 55000);
         String updateEmployeeJson = new ObjectMapper().writeValueAsString(updateEmployee);
 
@@ -195,6 +196,44 @@ public class EmployeeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateEmployeeJson))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    void should_return_400_when_perform_put_by_id_given_invalid_id() throws Exception {
+        // given
+        String id = new ObjectId().toString();
+        Employee updateEmployee = new Employee(id, "Jim", 20, "Male", 55000);
+        String updateEmployeeJson = new ObjectMapper().writeValueAsString(updateEmployee);
+
+        // when
+        // then
+        client.perform(MockMvcRequestBuilders.put("/employees/{id}", "gogogo")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateEmployeeJson))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    void should_return_400_when_perform_delete_given_employee() throws Exception {
+        //given
+        String employeeId = new ObjectId().toString();
+        Employee createdEmployee = employeeMongoRepository.save(new Employee(employeeId, "Jim", 20, "Male", 55000));
+
+        //when
+        client.perform(MockMvcRequestBuilders.delete("/employees/{id}" , "gogo"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+        //then
+        //assertThat(employeeMongoRepository.findAll(), empty());
+    }
+
+    @Test
+    void should_return_400_when_perform_get_by_id_given_id_not_exist() throws Exception {
+        // given
+        // when
+        // then
+        client.perform(MockMvcRequestBuilders.get("/employees/{id}", "go"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
 }

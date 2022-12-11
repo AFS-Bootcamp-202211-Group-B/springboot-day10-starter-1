@@ -4,7 +4,9 @@ import com.rest.springbootemployee.controller.dto.EmployeeRequest;
 import com.rest.springbootemployee.controller.dto.EmployeeResponse;
 import com.rest.springbootemployee.controller.mapper.EmployeeMapper;
 import com.rest.springbootemployee.entity.Employee;
+import com.rest.springbootemployee.exception.InvalidIdException;
 import com.rest.springbootemployee.service.EmployeeService;
+import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +31,9 @@ public class EmployeeController {
 
     @GetMapping("/{id}")
     public EmployeeResponse getById(@PathVariable String id) {
+        if(!ObjectId.isValid(id)){
+            throw new InvalidIdException();
+        }
         return employeeMapper.toResponse(employeeService.findById(id));
     }
 
@@ -46,6 +51,9 @@ public class EmployeeController {
     }
     @PutMapping("/{id}")
     public EmployeeResponse update(@PathVariable String id, @RequestBody EmployeeRequest employeeRequest) {
+        if(!ObjectId.isValid(id)){
+            throw new InvalidIdException();
+        }
         Employee employee = employeeMapper.toEntity(employeeRequest);
         Employee updatedEmployee = employeeService.update(id, employee);
         return employeeMapper.toResponse(updatedEmployee);
@@ -54,9 +62,11 @@ public class EmployeeController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable String id) {
+        if(!ObjectId.isValid(id)){
+            throw new InvalidIdException();
+        }
         employeeService.delete(id);
     }
-
 
     @GetMapping(params = {"page", "pageSize"})
     public List<Employee> getByPage(int page, int pageSize) {

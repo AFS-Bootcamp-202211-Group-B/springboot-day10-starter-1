@@ -1,5 +1,6 @@
 package com.rest.springbootemployee.advice;
 
+import com.rest.springbootemployee.exception.InvalidIdException;
 import com.rest.springbootemployee.exception.NoCompanyFoundException;
 import com.rest.springbootemployee.exception.NoEmployeeFoundException;
 import org.springframework.http.HttpStatus;
@@ -16,5 +17,11 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(HttpStatus.NOT_FOUND.value(), exception.getMessage());
     }
 
+    @ExceptionHandler({InvalidIdException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse invalidIdHandler(Exception exception) {
+        return new ErrorResponse(HttpStatus.NOT_FOUND.value(), exception.getMessage());
+        }
 
-}
+
+    }

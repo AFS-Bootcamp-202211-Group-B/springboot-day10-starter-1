@@ -3,6 +3,7 @@ package com.rest.springbootemployee;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rest.springbootemployee.entity.Company;
 import com.rest.springbootemployee.entity.Employee;
+import com.rest.springbootemployee.exception.InvalidIdException;
 import com.rest.springbootemployee.repository.CompanyMongoRepository;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,10 +17,16 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @SpringBootTest
@@ -233,5 +240,47 @@ public class CompanyControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(newCompanyJson))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    public void should_return_bad_request_when_find_by_company_id_given_a_wrong_id() throws Exception {
+        //when & then
+        client.perform(MockMvcRequestBuilders.get("/companies/{id}", "Invalid ID"))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(result -> assertTrue(result.getResolvedException() instanceof InvalidIdException))
+            .andExpect(result -> assertEquals("Invalid ID.", result.getResolvedException().getMessage()));
+    }
+    @Test
+    public void should_return_bad_request_when_perform_put_by_id_given_a_id_and_a_company() throws Exception {
+        //given
+        String newCompanyJson = new ObjectMapper().writeValueAsString(new Company(new ObjectId().toString(), "TETE", null));
+
+        //when & then
+        client.perform(MockMvcRequestBuilders.put("/companies/{id}", "invalidId")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(newCompanyJson))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(result -> assertTrue(result.getResolvedException() instanceof InvalidIdException))
+            .andExpect(result -> assertEquals("Invalid ID.", result.getResolvedException().getMessage()));
+
+    }
+
+    @Test
+    public void should_return_bad_request_when_perform_delete_by_id_given_a_id() throws Exception {
+        //given
+        //when & then
+        client.perform(MockMvcRequestBuilders.delete("/companies/{id}", "invalidId"))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(result -> assertTrue(result.getResolvedException() instanceof InvalidIdException))
+            .andExpect(result -> assertEquals("Invalid ID.", result.getResolvedException().getMessage()));
+    }
+    @Test
+    public void should_return_bad_request_when_perform_get_by_id_given_companies() throws Exception {
+        //given
+        //when & then
+        client.perform(MockMvcRequestBuilders.get("/companies/{id}/employees", "invalidId"))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(result -> assertTrue(result.getResolvedException() instanceof InvalidIdException))
+            .andExpect(result -> assertEquals("Invalid ID.", result.getResolvedException().getMessage()));
     }
 }

@@ -257,4 +257,28 @@ public class CompanyControllerTest {
                 .content(newCompanyJson))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
+
+    @Test
+    void should_return_400_when_perform_get_by_id_given_id_not_exist() throws Exception {
+        // given
+        // when
+        // then
+        client.perform(MockMvcRequestBuilders.get("/companies/{id}", "hi"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    void should_return_400_when_perform_put_by_id_given_id_not_exist() throws Exception {
+        // given
+        String id = new ObjectId().toString();
+        Company company = new Company(id, "Goola", null);
+        String newCompanyJson = new ObjectMapper().writeValueAsString(company);
+
+        // when
+        // then
+        client.perform(MockMvcRequestBuilders.put("/companies/{id}", "gg")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newCompanyJson))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
 }

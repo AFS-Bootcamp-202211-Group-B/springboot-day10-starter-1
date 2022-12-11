@@ -4,7 +4,9 @@ import com.rest.springbootemployee.controller.dto.EmployeeRequest;
 import com.rest.springbootemployee.controller.dto.EmployeeResponse;
 import com.rest.springbootemployee.controller.mapper.EmployeeMapper;
 import com.rest.springbootemployee.entity.Employee;
+import com.rest.springbootemployee.exception.InvalidIdException;
 import com.rest.springbootemployee.service.EmployeeService;
+import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,18 +24,21 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public List<Employee> getAll() {
-        return employeeService.findAll();
+    public List<EmployeeResponse> getAll() {
+        return employeeMapper.toResponseList(employeeService.findAll());
     }
 
     @GetMapping("/{id}")
-    public Employee getById(@PathVariable String id) {
-        return employeeService.findById(id);
+    public EmployeeResponse getById(@PathVariable String id) {
+        if(!ObjectId.isValid(id)){
+            throw new InvalidIdException();
+        }
+        return employeeMapper.toResponse(employeeService.findById(id));
     }
 
     @GetMapping(params = {"gender"})
-    public List<Employee> getByGender(@RequestParam String gender) {
-        return employeeService.findByGender(gender);
+    public List<EmployeeResponse> getByGender(@RequestParam String gender) {
+        return employeeMapper.toResponseList(employeeService.findByGender(gender));
     }
 
     //RequestBody Employee -> EmployeeRequest
@@ -60,8 +65,8 @@ public class EmployeeController {
 
 
     @GetMapping(params = {"page", "pageSize"})
-    public List<Employee> getByPage(int page, int pageSize) {
-        return employeeService.findByPage(page, pageSize);
+    public List<EmployeeResponse> getByPage(int page, int pageSize) {
+        return employeeMapper.toResponseList(employeeService.findByPage(page, pageSize));
     }
 
 }

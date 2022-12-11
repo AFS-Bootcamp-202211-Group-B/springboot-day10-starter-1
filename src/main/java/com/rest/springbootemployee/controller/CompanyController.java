@@ -5,8 +5,10 @@ import com.rest.springbootemployee.controller.dto.CompanyResponse;
 import com.rest.springbootemployee.controller.dto.EmployeeResponse;
 import com.rest.springbootemployee.controller.mapper.CompanyMapper;
 import com.rest.springbootemployee.entity.Company;
+import com.rest.springbootemployee.exception.InvalidIdException;
 import com.rest.springbootemployee.service.CompanyService;
 import com.rest.springbootemployee.entity.Employee;
+import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +32,9 @@ public class CompanyController {
 
     @GetMapping("/{id}")
     public CompanyResponse getById(@PathVariable String id) {
+        if(!ObjectId.isValid(id)){
+            throw new InvalidIdException();
+        }
         return companyMapper.toResponse(companyService.findById(id));
     }
 

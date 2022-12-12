@@ -19,6 +19,10 @@ public class Company {
         this.employees = employees;
     }
 
+    public Company() {
+
+    }
+
     public String getName() {
         return name;
     }

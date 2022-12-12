@@ -1,23 +1,12 @@
-package com.rest.springbootemployee.entity;
+package com.rest.springbootemployee.controller.dto;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.FieldType;
-import org.springframework.data.mongodb.core.mapping.MongoId;
-
-@Document
-public class Employee {
-    @MongoId(FieldType.OBJECT_ID)
-    private String id;
+public class EmployeeRequest {
     private String name;
     private Integer age;
     private String gender;
     private Integer salary;
 
-    public Employee(){
-
-    }
-    public Employee(String id, String name, Integer age, String gender, Integer salary) {
-        this.id = id;
+    public EmployeeRequest(String name, Integer age, String gender, Integer salary) {
         this.name = name;
         this.age = age;
         this.gender = gender;
@@ -54,13 +43,5 @@ public class Employee {
 
     public void setSalary(Integer salary) {
         this.salary = salary;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 }

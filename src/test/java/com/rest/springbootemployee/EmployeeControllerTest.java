@@ -64,8 +64,7 @@ public class EmployeeControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Susan"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.age").value(22))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.gender").value("Female"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.salary").value(10000));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.gender").value("Female"));
     }
 
     @Test
@@ -120,14 +119,12 @@ public class EmployeeControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Susan"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.age").value(20))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.salary").value(55000))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.gender").value("Female"));
 
         // then
         final Employee updatedEmployee = employeeMongoRepository.findAll().get(0);
         assertThat(updatedEmployee.getName(), equalTo("Susan"));
         assertThat(updatedEmployee.getAge(), equalTo(20));
-        assertThat(updatedEmployee.getSalary(), equalTo(55000));
         assertThat(updatedEmployee.getGender(), equalTo("Female"));
 
     }
@@ -146,7 +143,6 @@ public class EmployeeControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Jim"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.age").value(20))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.salary").value(55000))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.gender").value("Male"));
 
         // then
@@ -154,7 +150,6 @@ public class EmployeeControllerTest {
         assertThat(employees, hasSize(1));
         assertThat(employees.get(0).getName(), equalTo("Jim"));
         assertThat(employees.get(0).getAge(), equalTo(20));
-        assertThat(employees.get(0).getSalary(), equalTo(55000));
         assertThat(employees.get(0).getGender(), equalTo("Male"));
 
     }
@@ -186,6 +181,42 @@ public class EmployeeControllerTest {
     void should_return_404_when_perform_put_by_id_given_id_not_exist() throws Exception {
         // given
         String id = new ObjectId().toString();
+        Employee updateEmployee = new Employee(id, "Jim", 20, "Male", 55000);
+        String updateEmployeeJson = new ObjectMapper().writeValueAsString(updateEmployee);
+
+        // when
+        // then
+        client.perform(MockMvcRequestBuilders.put("/employees/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateEmployeeJson))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    void should_return_404_when_perform_delete_given_invalid_id() throws Exception {
+        //given
+        String employeeId = "1";
+        Employee createdEmployee = employeeMongoRepository.save(new Employee(new ObjectId().toString(), "Jim", 20, "Male", 55000));
+
+        //when & then
+        client.perform(MockMvcRequestBuilders.delete("/employees/{id}" , employeeId))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+
+    }
+
+    @Test
+    void should_return_404_when_perform_get_by_id_given_invalid_id() throws Exception {
+        // given
+        // when
+        // then
+        client.perform(MockMvcRequestBuilders.get("/employees/{id}", "1"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    void should_return_404_when_perform_put_by_id_given_invalid_id() throws Exception {
+        // given
+        String id = "1";
         Employee updateEmployee = new Employee(id, "Jim", 20, "Male", 55000);
         String updateEmployeeJson = new ObjectMapper().writeValueAsString(updateEmployee);
 

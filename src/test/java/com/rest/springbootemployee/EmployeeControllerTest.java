@@ -2,6 +2,7 @@ package com.rest.springbootemployee;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rest.springbootemployee.entity.Employee;
+import com.rest.springbootemployee.exception.InvalidIdException;
 import com.rest.springbootemployee.repository.EmployeeMongoRepository;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +20,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @SpringBootTest
@@ -64,8 +66,7 @@ public class EmployeeControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Susan"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.age").value(22))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.gender").value("Female"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.salary").value(10000));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.gender").value("Female"));
     }
 
     @Test
@@ -120,14 +121,12 @@ public class EmployeeControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Susan"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.age").value(20))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.salary").value(55000))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.gender").value("Female"));
 
         // then
         final Employee updatedEmployee = employeeMongoRepository.findAll().get(0);
         assertThat(updatedEmployee.getName(), equalTo("Susan"));
         assertThat(updatedEmployee.getAge(), equalTo(20));
-        assertThat(updatedEmployee.getSalary(), equalTo(55000));
         assertThat(updatedEmployee.getGender(), equalTo("Female"));
 
     }
@@ -146,7 +145,6 @@ public class EmployeeControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Jim"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.age").value(20))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.salary").value(55000))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.gender").value("Male"));
 
         // then
@@ -154,7 +152,6 @@ public class EmployeeControllerTest {
         assertThat(employees, hasSize(1));
         assertThat(employees.get(0).getName(), equalTo("Jim"));
         assertThat(employees.get(0).getAge(), equalTo(20));
-        assertThat(employees.get(0).getSalary(), equalTo(55000));
         assertThat(employees.get(0).getGender(), equalTo("Male"));
 
     }
@@ -196,5 +193,40 @@ public class EmployeeControllerTest {
                         .content(updateEmployeeJson))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
+    @Test
+    void should_return_bad_request_when_perform_get_by_id_given_employees() throws Exception {
+        //given
+        //when & then
+        client.perform(MockMvcRequestBuilders.get("/employees/{id}", "invalidId"))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(result -> assertTrue(result.getResolvedException() instanceof InvalidIdException))
+            .andExpect(result -> assertEquals("Invalid ID.", result.getResolvedException().getMessage()));
+    }
+    @Test
+    void should_return_bad_request_employee_when_perform_put_given_employee() throws Exception {
+        //given
+        String employeeId = new ObjectId().toString();
+        Employee employee = employeeMongoRepository.save(new Employee(employeeId, "Susan", 22, "Female", 10000));
+        Employee updateEmployee = new Employee(employeeId, "Jim", 20, "Male", 55000);
 
+        String updateEmployeeJson = new ObjectMapper().writeValueAsString(updateEmployee);
+
+        //when
+        client.perform(MockMvcRequestBuilders.put("/employees/{id}", "invalidId")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateEmployeeJson))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(result -> assertTrue(result.getResolvedException() instanceof InvalidIdException))
+            .andExpect(result -> assertEquals("Invalid ID.", result.getResolvedException().getMessage()));
+    }
+    @Test
+    void should_return_bad_request_204_when_perform_delete_given_employee() throws Exception {
+        //given
+        //when
+        client.perform(MockMvcRequestBuilders.delete("/employees/{id}" , "invalidId"))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(result -> assertTrue(result.getResolvedException() instanceof InvalidIdException))
+            .andExpect(result -> assertEquals("Invalid ID.", result.getResolvedException().getMessage()));
+
+    }
 }

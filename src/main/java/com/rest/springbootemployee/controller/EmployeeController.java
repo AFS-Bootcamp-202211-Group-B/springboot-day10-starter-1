@@ -1,57 +1,73 @@
 package com.rest.springbootemployee.controller;
 
-import com.rest.springbootemployee.entity.Employee;
+import com.rest.springbootemployee.controller.dto.EmployeeRequest;
+import com.rest.springbootemployee.controller.dto.EmployeeResponse;
+import com.rest.springbootemployee.controller.maper.EmployeeMapper;
+import com.rest.springbootemployee.exception.InvalidIdException;
 import com.rest.springbootemployee.service.EmployeeService;
+import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/employees")
 public class EmployeeController {
 
     private EmployeeService employeeService;
+    private EmployeeMapper employeeMapper;
 
-    public EmployeeController(EmployeeService employeeService) {
+    public EmployeeController(EmployeeService employeeService, EmployeeMapper employeeMapper) {
         this.employeeService = employeeService;
+        this.employeeMapper = employeeMapper;
     }
 
     @GetMapping
-    public List<Employee> getAll() {
-        return employeeService.findAll();
+    public List<EmployeeResponse> getAll() {
+        return employeeService.findAll().stream().map(employee->employeeMapper.toResponse(employee)).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public Employee getById(@PathVariable String id) {
-        return employeeService.findById(id);
+    public EmployeeResponse getById(@PathVariable String id) {
+        if(!ObjectId.isValid(id)){
+            throw new InvalidIdException();
+        }
+        return employeeMapper.toResponse(employeeService.findById(id));
     }
 
     @GetMapping(params = {"gender"})
-    public List<Employee> getByGender(@RequestParam String gender) {
-        return employeeService.findByGender(gender);
+    public List<EmployeeResponse> getByGender(@RequestParam String gender) {
+        return employeeService.findByGender(gender).stream().map(employee->employeeMapper.toResponse(employee)).collect(Collectors.toList());
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Employee add(@RequestBody Employee employee) {
-        return employeeService.create(employee);
+    public EmployeeResponse add(@RequestBody EmployeeRequest employee) {
+        return employeeMapper.toResponse(employeeService.create(employeeMapper.toResponse(employee)));
     }
     @PutMapping("/{id}")
-    public Employee update(@PathVariable String id, @RequestBody Employee employee) {
-        return employeeService.update(id, employee);
+    public EmployeeResponse update(@PathVariable String id, @RequestBody EmployeeRequest employee) {
+        if(!ObjectId.isValid(id)){
+            throw new InvalidIdException();
+        }
+        return employeeMapper.toResponse(employeeService.update(id, employeeMapper.toResponse(employee)));
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable String id) {
+        if(!ObjectId.isValid(id)){
+            throw new InvalidIdException();
+        }
         employeeService.delete(id);
     }
 
 
     @GetMapping(params = {"page", "pageSize"})
-    public List<Employee> getByPage(int page, int pageSize) {
-        return employeeService.findByPage(page, pageSize);
+    public List<EmployeeResponse> getByPage(int page, int pageSize) {
+        return employeeService.findByPage(page, pageSize).stream().map(employee->employeeMapper.toResponse(employee)).collect(Collectors.toList());
     }
 
 }
